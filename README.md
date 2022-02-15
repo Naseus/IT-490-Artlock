@@ -7,7 +7,7 @@
    - [ ] Top Art
 - [ ] Sites Treding Albums
 - [ ] Reviews
-  -[ ] Comments on reviews
+  - [ ] Comments on reviews
 
 - [ ] Album Pages
 - [ ] Targeted Recomendations
