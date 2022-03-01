@@ -1,10 +1,12 @@
 -- USAGE:
--- Login to MYSQL and create the database ArtLock
--- Exit to cmd and run `sudo mysql < db.sql`
+-- from cmd run `sudo mysql < db.sql`
 -- This requires the user to have a defaults-file for the use, one can be used
 -- for root with `sudo mysql --defaults-file=/etc/mysql/debian.cnf` on Unbuntu.
 
-CREATE TABLE IF NOT EXISTS ArtLock.ALUser(
+CREATE DATABASE IF NOT EXISTS ArtLock;
+USE ArtLock;
+
+CREATE TABLE IF NOT EXISTS ALUser(
     UserId int NOT NULL AUTO_INCREMENT,
     Username varchar(255),
     Password varchar(255),
@@ -12,7 +14,7 @@ CREATE TABLE IF NOT EXISTS ArtLock.ALUser(
     PRIMARY KEY(Userid)
 );
 
-CREATE TABLE IF NOT EXISTS ArtLock.Token(
+CREATE TABLE IF NOT EXISTS Token(
     Token varchar(255),
     AuthUser int NOT NULL,
     ExpireDate Date,
@@ -20,14 +22,14 @@ CREATE TABLE IF NOT EXISTS ArtLock.Token(
     PRIMARY KEY(Token)
 );
 
-CREATE TABLE IF NOT EXISTS ArtLock.Album(
+CREATE TABLE IF NOT EXISTS Album(
     Aid int NOT NULL AUTO_INCREMENT,
     EmbedLink varchar(255),
     AlbumArt varchar(255),
     PRIMARY KEY(Aid)
 );
 
-CREATE TABLE IF NOT EXISTS ArtLock.Review(
+CREATE TABLE IF NOT EXISTS Review(
     text text,
     ArtStars int,
     Stars int,
@@ -38,14 +40,14 @@ CREATE TABLE IF NOT EXISTS ArtLock.Review(
     CONSTRAINT PKReview PRIMARY KEY(Reviewer, Album)
 );
 
-CREATE TABLE IF NOT EXISTS ArtLock.AlbumStack(
+CREATE TABLE IF NOT EXISTS AlbumStack(
     Sid int NOT NULL AUTO_INCREMENT,
     CreatedBy int NOT NULL,
     FOREIGN KEY(CreatedBy) REFERENCES ALUser(UserId),
     PRIMARY KEY(Sid)
 );
 
-CREATE TABLE IF NOT EXISTS ArtLock.AlbumIn(
+CREATE TABLE IF NOT EXISTS AlbumIn(
     Stack int NOT NULL,
     Album int NOT NULL,
     FOREIGN KEY(Stack) REFERENCES AlbumStack(Sid),
@@ -53,9 +55,9 @@ CREATE TABLE IF NOT EXISTS ArtLock.AlbumIn(
 );
 
 
-CREATE EVENT IF NOT EXISTS ArtLock.ClearTokens
+CREATE EVENT IF NOT EXISTS ClearTokens
     ON SCHEDULE
         EVERY 1 DAY
     COMMENT 'Clearing old tokens'
     DO
-        DELETE FROM ArtLock.Token WHERE ExpireDate <= NOW();
+        DELETE FROM Token WHERE ExpireDate <= NOW();
