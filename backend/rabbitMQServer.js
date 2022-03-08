@@ -1,7 +1,7 @@
 const amqp = require('amqplib/callback_api');
 
 class Server {
-    constructor(mqData) {
+    constructor(mqData, handler) {
         this.mqUrl = (`amqp://${mqData["USER"]}`
                 +`:${mqData["PASSWORD"]}`
                 + `@${mqData["BROKER_HOST"]}`
@@ -10,6 +10,7 @@ class Server {
 
         this.queue = mqData['QUEUE']
         this.exchange = mqData['EXCHANGE']
+        this.handler = handler
     }
 
     reply(msg, channel) {
@@ -17,7 +18,7 @@ class Server {
         let replyTo = msg.fields.routingKey + '.response';
 
         if(replyTo) {
-            channel.publish(this.exchange, replyTo, msg.content, {
+            channel.publish(this.exchange, replyTo, this.handler.handle(msg), {
                 "correlationId":msg.properties.correlationId
             });
         }
