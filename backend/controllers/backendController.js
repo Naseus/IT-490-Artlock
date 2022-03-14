@@ -1,10 +1,10 @@
-const mySQLClient = require('../models/mysqlClient.js');
+const LoginClient = require('../models/loginClient');
 const crypto = require('crypto');
 
 class BackendController {
     async Login(req) {
     let res = JSON.parse('{"status":200, "body":""}');
-        let loginclient = new mySQLClient();
+        let loginclient = new LoginClient();
 
         if(!(req.username && req.password)) {
             res.status = 403;
