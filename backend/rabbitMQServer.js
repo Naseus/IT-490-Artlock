@@ -13,12 +13,12 @@ class Server {
         this.handler = handler
     }
 
-    reply(msg, channel) {
+    async reply(msg, channel) {
         // Formating the routing key to match the php client
         let replyTo = msg.fields.routingKey + '.response';
 
         if(replyTo) {
-            channel.publish(this.exchange, replyTo, this.handler.handle(msg), {
+            channel.publish(this.exchange, replyTo, await this.handler.handle(msg), {
                 "correlationId":msg.properties.correlationId
             });
         }
@@ -39,9 +39,9 @@ class Server {
 
                 console.log(`Waiting for messages at ${this.mqUrl} in ${this.queue}`);
 
-                channel.consume(this.queue, (msg) => {
+                channel.consume(this.queue, async (msg) => {
                     console.log(`Received ${msg.content.toString()}"`);
-                    this.reply(msg, channel)
+                    await this.reply(msg, channel)
                     channel.ack(msg);
                 });
             });

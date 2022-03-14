@@ -7,10 +7,10 @@ class ResponseHandler {
         return new Buffer(`{"Error ${err}":"${msg}"}`);
     }
 
-    handle(msg){
+    async handle(msg){
         let obj = JSON.parse(msg.content);
         if(obj.type) {
-            return new Buffer(JSON.stringify(this.controller[obj.type](obj)));
+            return new Buffer(JSON.stringify(await this.controller[obj.type](obj)));
         }
         return this.error(404, 'No type was provided');
     }
