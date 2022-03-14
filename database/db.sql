@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS Album(
     Aid int NOT NULL AUTO_INCREMENT,
     EmbedLink varchar(255),
     AlbumArt varchar(255),
+    Genre varchar(255),
     PRIMARY KEY(Aid)
 );
 
