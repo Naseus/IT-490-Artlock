@@ -42,10 +42,14 @@ class LoginClient extends mySQLClient {
         }
 
         data = await this.createToken(token, user.UserId);
-        console.log(token);
         return resToken(token);
     }
 
+    async registerUser(user, password){
+        let query = "INSERT INTO ALUser (username,password) VALUES (?,?)";
+        let data = await super.makeQuery(query, [user, password]);
+        return data;
+    }
 }
 
 module.exports = LoginClient;
