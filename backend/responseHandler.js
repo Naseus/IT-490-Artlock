@@ -4,7 +4,7 @@ class ResponseHandler {
     }
 
     error(err, msg) {
-        return new Buffer(`{"status:${err}", body:"${msg}"}`);
+        return Buffer.from(`{"status":${err}, "body":"${msg}"}`);
     }
 
     async handle(msg){
@@ -15,9 +15,15 @@ class ResponseHandler {
 
         if(obj.type) {
             let res = JSON.parse('{"status":200, "body":""}');
-            res = JSON.stringify(await this.controller[obj.type](obj, res));
-            console.log(res);
-            return new Buffer(res);
+            try{
+                res = JSON.stringify(await this.controller[obj.type](obj, res));
+            }
+            catch(e) {
+                console.log(`Error ${e}`);
+                return this.error(500, e);
+            }
+            console.log(`Response ${res}`);
+            return Buffer.from(res);
         }
         return this.error(404, 'No type was provided');
     }
