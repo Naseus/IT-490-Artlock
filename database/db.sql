@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Token(
     AuthUser int NOT NULL,
     ExpireDate Date,
     FOREIGN KEY(AuthUser) REFERENCES ALUser(UserId),
+    UNIQUE (AuthUser),
     PRIMARY KEY(Token)
 );
 

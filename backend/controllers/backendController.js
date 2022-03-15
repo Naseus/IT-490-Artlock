@@ -2,8 +2,7 @@ const LoginClient = require('../models/loginClient');
 const crypto = require('crypto');
 
 class BackendController {
-    async Login(req) {
-    let res = JSON.parse('{"status":200, "body":""}');
+    async Login(req, res) {
         let loginclient = new LoginClient();
 
         if(!(req.username && req.password)) {
@@ -34,7 +33,25 @@ class BackendController {
 
     resource(obj) {}
 
-    RegisterUser() {}
+    async AuthenticateToken(req, res) {
+        let client = new LoginClient();
+
+        try {
+            res.body = await client.authToken(req.token);
+            res.body = res.body[0];
+        } catch(e) {
+            res.status = 500;
+            res.body = e;
+        }
+        if(!res.body) {
+            res.status = 404;
+            res.body = "Token was not found";
+        }
+        return res;
+    }
+
+    RegisterUser(req, res) {
+    }
 }
 
 module.exports = BackendController;
