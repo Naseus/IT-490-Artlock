@@ -33,7 +33,20 @@ class BackendController {
         return res;
     }
 
-    resource(obj) {}
+    async Resource(req, res) {
+        if (!req.token) {
+            res.status = 403;
+            res.body = "Forbiden";
+            return res;
+        }
+
+        if(!req.op) {
+            res.status = 404;
+            res.body = "Provide an operation";
+            return res;
+        }
+        res.body
+    }
 
     async AuthenticateToken(req, res) {
 

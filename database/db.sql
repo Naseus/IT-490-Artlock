@@ -28,18 +28,21 @@ CREATE TABLE IF NOT EXISTS Album(
     EmbedLink varchar(255),
     AlbumArt varchar(255),
     Genre varchar(255),
+    TrendScore float,
+    LastScore float,
     PRIMARY KEY(Aid)
 );
 
 CREATE TABLE IF NOT EXISTS Review(
-    text text,
+    Rid int NOT NULL AUTO_INCREMENT,
+    ReviewText text,
     ArtStars int,
     Stars int,
     Reviewer int NOT NULL,
     Album int NOT NULL,
     FOREIGN KEY(Reviewer) REFERENCES ALUser(UserId),
     FOREIGN KEY(Album) REFERENCES Album(Aid),
-    CONSTRAINT PKReview PRIMARY KEY(Reviewer, Album)
+    PRIMARY KEY(Rid)
 );
 
 CREATE TABLE IF NOT EXISTS AlbumStack(
@@ -54,6 +57,14 @@ CREATE TABLE IF NOT EXISTS AlbumIn(
     Album int NOT NULL,
     FOREIGN KEY(Stack) REFERENCES AlbumStack(Sid),
     FOREIGN KEY(Album) REFERENCES Album(Aid)
+);
+
+CREATE TABLE IF NOT EXISTS Comment(
+    Cid int NOT NULL,
+    CommentOn int NOT NULL,
+    CommentText text,
+    FOREIGN KEY(CommentOn) REFERENCES Review(Rid),
+    PRIMARY KEY(Cid)
 );
 
 
