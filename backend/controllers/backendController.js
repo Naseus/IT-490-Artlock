@@ -1,6 +1,10 @@
 const LoginClient = require('../models/loginClient');
 const crypto = require('crypto');
 
+const RmqClient = require('../rabbitMQClient.js')
+
+const rmqClient = new RmqClient(require('../dmzrabbitMQ.js'));
+
 class BackendController {
     constructor() {
         this.loginclient = new LoginClient();
@@ -31,21 +35,6 @@ class BackendController {
         res.status = 404;
         res.body = "Username or password is incorecct";
         return res;
-    }
-
-    async Resource(req, res) {
-        if (!req.token) {
-            res.status = 403;
-            res.body = "Forbiden";
-            return res;
-        }
-
-        if(!req.op) {
-            res.status = 404;
-            res.body = "Provide an operation";
-            return res;
-        }
-        res.body
     }
 
     async AuthenticateToken(req, res) {
@@ -91,6 +80,22 @@ class BackendController {
         res.status = 500;
         res.body = "";
         return res;
+    }
+
+    async SearchAlbum(req, res) {
+        let dmzReq = {'type':'Search','body':req.body};
+        let data = await rmqClient.sendData(dmzReq);
+        if(!data) {
+            res.status = 500;
+            res.body = 'API fail';
+            return res;
+        }
+        // Parse Album names
+        // Create Albums with the same names in our db(if not exists)
+        // Send the data to the user
+        res = data;
+        return res;
+
     }
 }
 
