@@ -14,7 +14,7 @@ else
   $fileName = "test.json";
 }
 $file = fopen($fileName, "r") or die("Could not open file");
-$data = fread($file, filesize("test.json"));
+$data = fread($file, filesize($fileName));
 
 $request = json_decode($data);
 echo $data;

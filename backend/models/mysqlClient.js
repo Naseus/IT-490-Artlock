@@ -7,8 +7,6 @@ class mySqlClient {
         connection.connect((err) => {
             if(err)
                 return err;
-            if(!fields) {
-            }
             connection.query(query, fields, (err, results) =>{
                     if(err)
                         return errorCallback(err);
