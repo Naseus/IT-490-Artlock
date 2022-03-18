@@ -24,12 +24,19 @@ class DMZController {
         } catch (e) {
             let status = e.body.error.status;
             if(status ===401) {
-                return await this._setAuthToken('searchAlbums', req.body, res);
+                res = await this._setAuthToken('searchAlbums', req.body, res);
+            } else {
+                res.status =  status | 500;
+                res.body = e;
             }
-            res.status =  status | 500;
-            res.body = e;
         }
-            return res;
+        console.log('===========================');
+        console.log(res.body);
+        console.log('===========================');
+        if(res.body.body) {
+            res.body = res.body.body;
+        }
+        return res;
     }
 }
 

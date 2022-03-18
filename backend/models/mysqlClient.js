@@ -26,7 +26,7 @@ class mySqlClient {
     }
 
     async authToken(token) {
-        let query = "SELECT ALUser.Username FROM ALUser INNER JOIN Token "
+        let query = "SELECT * FROM ALUser INNER JOIN Token "
                   + "ON Token.AuthUser=ALUser.UserId WHERE Token.Token=?;";
 
         return await this.makeQuery(query, [token]);

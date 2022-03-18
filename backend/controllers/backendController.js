@@ -1,14 +1,18 @@
-const LoginClient = require('../models/loginClient');
 const crypto = require('crypto');
+const LoginClient = require('../models/loginClient');
+const AlbumClient = require('../models/albumClient');
+const ReviewClient = require('../models/reviewClient');
+
+const loginClient = new LoginClient();
+const albumClient = new AlbumClient();
+const reviewClient = new ReviewClient();
+
 
 const RmqClient = require('../rabbitMQClient.js')
 
 const rmqClient = new RmqClient(require('../dmzrabbitMQ.js'));
 
 class BackendController {
-    constructor() {
-        this.loginclient = new LoginClient();
-    }
     async Login(req, res) {
 
         if(!(req.username && req.password)) {
@@ -18,7 +22,7 @@ class BackendController {
         }
 
         // Check to make sure that the username is in the database
-        let data = await this.loginclient.getOneUserByName(req.username);
+        let data = await loginClient.getOneUserByName(req.username);
         let user = data[0];
         if(!user) {
             res.status = 404;
@@ -28,7 +32,7 @@ class BackendController {
         let hash = crypto.createHash('sha1').update(req.password).digest('base64');
         // check that the password matches the hash
         if (user.Password === hash) {
-            res.body = await this.loginclient.getOrCreateToken(user);
+            res.body = await loginClient.getOrCreateToken(user);
             return res;
         }
 
@@ -40,8 +44,8 @@ class BackendController {
     async AuthenticateToken(req, res) {
 
         try {
-            res.body = await this.loginclient.authToken(req.token);
-            res.body = res.body[0];
+            res.body = await loginClient.authToken(req.token);
+            res.body = res.body[0].Username;
         } catch(e) {
             res.status = 500;
             res.body = e;
@@ -65,7 +69,7 @@ class BackendController {
         let data;
 
         try {
-            data = await this.loginclient.registerUser(req.username, hash);
+            data = await loginClient.registerUser(req.username, hash);
         } catch(e) {
             res.status = 403;
             res.body = "User already exists";
@@ -73,8 +77,8 @@ class BackendController {
         }
 
         if(data.affectedRows === 1) {
-            let userData = await this.loginclient.getOneUserByName(req.username);
-            return await this.loginclient.getOrCreateToken(userData[0]);
+            let userData = await loginClient.getOneUserByName(req.username);
+            return await loginClient.getOrCreateToken(userData[0]);
         }
         // Make sure that if there is a bug the user cannot get any information
         res.status = 500;
@@ -84,18 +88,51 @@ class BackendController {
 
     async SearchAlbum(req, res) {
         let dmzReq = {'type':'Search','body':req.body};
+
+        let user = await albumClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+
         let data = await rmqClient.sendData(dmzReq);
         if(!data) {
             res.status = 500;
             res.body = 'API fail';
             return res;
         }
-        // Parse Album names
-        // Create Albums with the same names in our db(if not exists)
+        // Parse Album data
+        data.body.albums.items = data.body.albums.items.filter(album=>album.album_type!='single');
+        let albums = [];
+        for (let album of data.body.albums.items) {
+            albums.push(
+                {
+                    'Aid':album.id,
+                    'AlbumArt': album.images[1].url,
+                    'Artist': album.artists[0].id,
+                    'ArtistName': album.artists[0].name
+
+            });
+            delete(album['available_markets']);
+        }
+        // Create Albums with the same names in our db
+        console.log(JSON.stringify(albums));
+        await albumClient.createAlbums(albums);
         // Send the data to the user
-        res = data;
+        res.body = albums;
         return res;
 
+    }
+
+    async CreateReview(req, res) {
+        let user = await albumClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        return await reviewClient.createReview(req.text, req.art_stars, req.stars, user[0].UserId, req.album);
     }
 }
 
