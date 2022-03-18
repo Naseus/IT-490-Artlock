@@ -2,24 +2,18 @@ const amqp = require('amqplib');
 
 class Client {
     constructor(mqData) {
-        console.log(mqData);
         this.mqUrl = (`amqp://${mqData["USER"]}`
                 +`:${mqData["PASSWORD"]}`
                 + `@${mqData["BROKER_HOST"]}`
                 + `:${mqData["BROKER_PORT"]}`
                 + `/${mqData["VHOST"]}`);
 
-        this.queue = mqData['QUEUE']
-        this.exchange = mqData['EXCHANGE']
+        this.queue = mqData['QUEUE'];
+        this.exchange = mqData['EXCHANGE'];
     }
 
     async sendData(msg){
-        console.log(this.mqUrl);
         let conn = await amqp.connect(this.mqUrl)
-        console.log(conn);
-         //   return "connected";
-        console.log('help');
-        console.log('help');
         let channel = await conn.createChannel();
         channel.publish(this.exchange, '*', Buffer.from(JSON.stringify(msg)));
 
@@ -29,11 +23,11 @@ class Client {
 
         let res = false;
         let i = 0;
-        while(!res && i < 300) {
-            res = await channel.get(rqueue);
+        while(!res) {
+            res = await channel.get(rqueue, {'noAck':true});
             i++;
         }
-        console.log(res);
+        //channel.ackAll();
 
         if(!res)
             return false;

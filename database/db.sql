@@ -24,22 +24,22 @@ CREATE TABLE IF NOT EXISTS Token(
 );
 
 CREATE TABLE IF NOT EXISTS Album(
-    Aid int NOT NULL AUTO_INCREMENT,
-    EmbedLink varchar(255),
+    Aid varchar(32) NOT NULL,
     AlbumArt varchar(255),
-    Genre varchar(255),
+    Artist varchar(255),
+    ArtistName varchar(255),
     TrendScore float,
-    LastScore float,
+    LastReviewAverage float,
     PRIMARY KEY(Aid)
 );
 
 CREATE TABLE IF NOT EXISTS Review(
     Rid int NOT NULL AUTO_INCREMENT,
     ReviewText text,
-    ArtStars int,
-    Stars int,
+    ArtStars int CHECK(ArtStars <= 5),
+    Stars int CHECK(Stars <= 5),
     Reviewer int NOT NULL,
-    Album int NOT NULL,
+    Album varchar(32) NOT NULL,
     FOREIGN KEY(Reviewer) REFERENCES ALUser(UserId),
     FOREIGN KEY(Album) REFERENCES Album(Aid),
     PRIMARY KEY(Rid)
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS AlbumStack(
 
 CREATE TABLE IF NOT EXISTS AlbumIn(
     Stack int NOT NULL,
-    Album int NOT NULL,
+    Album varchar(32) NOT NULL,
     FOREIGN KEY(Stack) REFERENCES AlbumStack(Sid),
     FOREIGN KEY(Album) REFERENCES Album(Aid)
 );
