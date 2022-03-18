@@ -42,7 +42,8 @@ CREATE TABLE IF NOT EXISTS Review(
     Album varchar(32) NOT NULL,
     FOREIGN KEY(Reviewer) REFERENCES ALUser(UserId),
     FOREIGN KEY(Album) REFERENCES Album(Aid),
-    PRIMARY KEY(Rid)
+    PRIMARY KEY(Rid),
+    UNIQUE reviewerOnAlbum(Reviewer, Album)
 );
 
 CREATE TABLE IF NOT EXISTS AlbumStack(
