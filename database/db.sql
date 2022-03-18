@@ -26,10 +26,11 @@ CREATE TABLE IF NOT EXISTS Token(
 CREATE TABLE IF NOT EXISTS Album(
     Aid varchar(32) NOT NULL,
     AlbumArt varchar(255),
+    AlbumName varchar(255),
     Artist varchar(255),
     ArtistName varchar(255),
-    TrendScore float,
-    LastReviewAverage float,
+    TrendScore float DEFAULT 0.0,
+    LastReviewAverage float DEFAULT 0.0,
     PRIMARY KEY(Aid)
 );
 

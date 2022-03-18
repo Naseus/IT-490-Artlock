@@ -110,6 +110,7 @@ class BackendController {
                 {
                     'Aid':album.id,
                     'AlbumArt': album.images[1].url,
+                    'AlbumName': album.name,
                     'Artist': album.artists[0].id,
                     'ArtistName': album.artists[0].name
 
@@ -123,6 +124,26 @@ class BackendController {
         res.body = albums;
         return res;
 
+    }
+
+    async TopAlbums(req, res) {
+        let user = await albumClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        return await albumClient.getByRatings();
+    }
+
+    async TrendingAlbums(req, res) {
+        let user = await albumClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        return await albumClient.getByTrending();
     }
 
     async CreateReview(req, res) {
