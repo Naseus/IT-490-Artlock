@@ -75,3 +75,10 @@ CREATE EVENT IF NOT EXISTS ClearTokens
     COMMENT 'Clearing old tokens'
     DO
         DELETE FROM Token WHERE ExpireDate <= NOW();
+
+CREATE EVENT IF NOT EXISTS CallUpdatetrending
+    ON SCHEDULE
+        EVERY 1 WEEK
+    COMMENT 'Update the trending page'
+    DO
+        CALL UpdateTrendingScore()
