@@ -1,6 +1,5 @@
 {
-    "type":"EditComment",
+    "type":"DeleteReview",
     "token":"n2bg7ok5777rq7prges66",
-    "comment_id":3,
-    "text":"sorry, that was rude."
+    "review_id":1
 }

@@ -2,10 +2,12 @@ const crypto = require('crypto');
 const LoginClient = require('../models/loginClient');
 const AlbumClient = require('../models/albumClient');
 const ReviewClient = require('../models/reviewClient');
+const CommentClient = require('../models/commentClient');
 
 const loginClient = new LoginClient();
 const albumClient = new AlbumClient();
 const reviewClient = new ReviewClient();
+const commentClient = new CommentClient();
 
 
 const RmqClient = require('../rabbitMQClient.js')
@@ -147,13 +149,95 @@ class BackendController {
     }
 
     async CreateReview(req, res) {
-        let user = await albumClient.authToken(req.token);
+        let user = await reviewClient.authToken(req.token);
         if(!user[0]) {
             res.status = 403;
             res.body = "Forbidden";
             return res;
         }
         return await reviewClient.createReview(req.text, req.art_stars, req.stars, user[0].UserId, req.album);
+    }
+
+    async GetAlbumReviews(req, res) {
+        let user = await reviewClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        return await reviewClient.getReviewsByAlbum(req.album)
+    }
+
+    async EditReview(req, res) {
+        let user = await reviewClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        return await reviewClient.updateReview(req.text, req.art_stars, req.stars, user[0].UserId, req.review);
+    }
+
+    async DeleteReview(req, res) {
+        let user = await reviewClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        if(req.review_id)
+            return await reviewClient.deleteReview(req.review_id, user[0].UserId);
+        res.status = 404;
+        res.body = "A review_id is required";
+        return res;
+    }
+
+    async CreateComment(req, res) {
+        let user = await commentClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        return await commentClient.createComment(req.review, req.text, user[0].UserId);
+    }
+
+    async EditComment(req, res) {
+        let user = await commentClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        if(req.comment_id)
+            return await commentClient.updateComment(req.text, req.comment_id, user[0].UserId);
+        res.status = 404;
+        res.body = "A comment ID is required";
+        return res;
+    }
+
+    async GetAlbumComments(req, res) {
+        let user = await commentClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        return await commentClient.getAlbumComments(req.album);
+    }
+
+    async DeleteComment(req, res) {
+        let user = await reviewClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        if(req.comment_id)
+            return await commentClient.deleteComment(req.comment_id, user[0].UserId);
+        res.status = 404;
+        res.body = "a comment_id is required";
+        return res;
     }
 }
 
