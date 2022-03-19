@@ -107,28 +107,42 @@ class BackendController {
             res.body = 'API fail';
             return res;
         }
-        // Parse Album data
-        data.body.albums.items = data.body.albums.items.filter(album=>album.album_type!='single');
-        let albums = [];
-        for (let album of data.body.albums.items) {
-            albums.push(
-                {
-                    'Aid':album.id,
-                    'AlbumArt': album.images[1].url,
-                    'AlbumName': album.name,
-                    'Artist': album.artists[0].id,
-                    'ArtistName': album.artists[0].name
-
-            });
-            delete(album['available_markets']);
-        }
-        // Create Albums with the same names in our db
-        console.log(JSON.stringify(albums));
-        await albumClient.createAlbums(albums);
-        // Send the data to the user
+        let albums = await albumClient.parseAndCreateAlbums(data.body.albums.items);
         res.body = albums;
         return res;
+    }
 
+    async AlbumRecommendations(req, res) {
+        let user = await albumClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        let reviewedAlbums = await albumClient.getReviewedAlbums(user[0].UserId);
+        let tracks = [];
+        for(let ele of reviewedAlbums){
+            tracks.push(ele['Artist']);
+        }
+        let dmzReq = {'type':'Recommendation', 'body':tracks};
+
+        let data = await rmqClient.sendData(dmzReq);
+        if(!data) {
+            res.status = 500;
+            res.body = 'API fail';
+            return res;
+        }
+        if(data.status != 200) {
+            return data;
+        }
+
+        let albums = [];
+        for(let ele of data.body.tracks)
+            albums.push(ele['album']);
+
+        albums = await albumClient.parseAndCreateAlbums(albums);
+        res.body = albums;
+        return res;
     }
 
     async TopAlbums(req, res) {
