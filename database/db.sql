@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS Token(
     Token varchar(255),
     AuthUser int NOT NULL,
     ExpireDate Date,
-    FOREIGN KEY(AuthUser) REFERENCES ALUser(UserId),
+    FOREIGN KEY(AuthUser) REFERENCES ALUser(UserId) ON DELETE CASCADE,
     UNIQUE (AuthUser),
     PRIMARY KEY(Token)
 );
@@ -41,31 +41,33 @@ CREATE TABLE IF NOT EXISTS Review(
     Stars int CHECK(Stars <= 5),
     Reviewer int NOT NULL,
     Album varchar(32) NOT NULL,
-    FOREIGN KEY(Reviewer) REFERENCES ALUser(UserId),
-    FOREIGN KEY(Album) REFERENCES Album(Aid),
+    FOREIGN KEY(Reviewer) REFERENCES ALUser(UserId) ON DELETE CASCADE,
+    FOREIGN KEY(Album) REFERENCES Album(Aid) ON DELETE CASCADE,
     PRIMARY KEY(Rid),
-    UNIQUE reviewerOnAlbum(Reviewer, Album)
+    UNIQUE INDEX reviewerOnAlbum(Reviewer, Album)
 );
 
 CREATE TABLE IF NOT EXISTS AlbumStack(
     Sid int NOT NULL AUTO_INCREMENT,
     CreatedBy int NOT NULL,
-    FOREIGN KEY(CreatedBy) REFERENCES ALUser(UserId),
+    FOREIGN KEY(CreatedBy) REFERENCES ALUser(UserId) ON DELETE CASCADE,
     PRIMARY KEY(Sid)
 );
 
 CREATE TABLE IF NOT EXISTS AlbumIn(
     Stack int NOT NULL,
     Album varchar(32) NOT NULL,
-    FOREIGN KEY(Stack) REFERENCES AlbumStack(Sid),
-    FOREIGN KEY(Album) REFERENCES Album(Aid)
+    FOREIGN KEY(Stack) REFERENCES AlbumStack(Sid) ON DELETE CASCADE,
+    FOREIGN KEY(Album) REFERENCES Album(Aid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Comment(
-    Cid int NOT NULL,
+    Cid int NOT NULL AUTO_INCREMENT,
     CommentOn int NOT NULL,
+    Commenter int NOT NULL,
     CommentText text,
-    FOREIGN KEY(CommentOn) REFERENCES Review(Rid),
+    FOREIGN KEY(CommentOn) REFERENCES Review(Rid) ON DELETE CASCADE,
+    FOREIGN KEY(Commenter) REFERENCES ALUser(UserId) ON DELETE CASCADE,
     PRIMARY KEY(Cid)
 );
 
