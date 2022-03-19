@@ -34,6 +34,35 @@ class AlbumClient extends mySQLClient {
         let query = 'SELECT * FROM Album ORDER BY TrendScore DESC';
         return await this.makeQuery(query);
     }
+
+    async getReviewedAlbums(user) {
+        let query = 'SELECT * FROM Album'
+                    +' INNER JOIN Review ON Album.Aid=Review.Album'
+                    +' WHERE Review.Reviewer=?;';
+        return await this.makeQuery(query, [user]);
+    }
+
+    async parseAndCreateAlbums(data){
+        console.log(data);
+        data = data.filter(album=>album.album_type!='single');
+        let albums = [];
+        for (let album of data) {
+            albums.push(
+                {
+                    'Aid':album.id,
+                    'AlbumArt': album.images[0].url,
+                    'AlbumName': album.name,
+                    'Artist': album.artists[0].id,
+                    'ArtistName': album.artists[0].name
+
+            });
+            delete(album['available_markets']);
+        }
+        // Create Albums with the same names in our db
+        console.log(JSON.stringify(albums));
+        await this.createAlbums(albums);
+        return albums;
+    }
 }
 
 module.exports = AlbumClient;

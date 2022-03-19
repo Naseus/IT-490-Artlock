@@ -18,25 +18,35 @@ class DMZController {
 
     }
 
-    async Search(req, res) {
+    async _callFunc(func, args, res) {
         try {
-            res.body = await spotifyApi.searchAlbums(req.body);
+            res.body = await spotifyApi[func](args);
         } catch (e) {
             let status = e.body.error.status;
             if(status ===401) {
-                res = await this._setAuthToken('searchAlbums', req.body, res);
+                res = await this._setAuthToken(func, args, res);
             } else {
                 res.status =  status | 500;
                 res.body = e;
             }
         }
-        console.log('===========================');
-        console.log(res.body);
-        console.log('===========================');
         if(res.body.body) {
             res.body = res.body.body;
         }
         return res;
+    }
+
+    async Search(req, res) {
+        return await this._callFunc('searchAlbums', req.body, res);
+    }
+
+    async Recommendation(req, res) {
+        let args ={
+            'min_energy':0.4,
+            'seed_artists': req.body,
+            'min_popularity':50
+        };
+        return await this._callFunc('getRecommendations', args, res)
     }
 }
 
