@@ -1,5 +1,5 @@
 {
-    "type":"DeleteReview",
+    "type":"DeleteStack",
     "token":"n2bg7ok5777rq7prges66",
-    "review_id":1
+    "stack": 1
 }
