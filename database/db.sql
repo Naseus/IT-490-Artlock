@@ -50,15 +50,28 @@ CREATE TABLE IF NOT EXISTS Review(
 CREATE TABLE IF NOT EXISTS AlbumStack(
     Sid int NOT NULL AUTO_INCREMENT,
     CreatedBy int NOT NULL,
+    StackName varchar(255),
     FOREIGN KEY(CreatedBy) REFERENCES ALUser(UserId) ON DELETE CASCADE,
-    PRIMARY KEY(Sid)
+    PRIMARY KEY(Sid),
+    UNIQUE INDEX UserStacks(CreatedBy, StackName)
+);
+
+CREATE TABLE IF NOT EXISTS StackViewer(
+    Vid int NOT NULL,
+    Stack int NOT NULL,
+    Viewer int NOT NULL,
+    FOREIGN KEY(Viewer) REFERENCES ALUser(UserId) ON DELETE CASCADE,
+    FOREIGN KEY(Stack) REFERENCES ALUser(UserId) ON DELETE CASCADE,
+    UNIQUE KEY stackViewer(Stack,Viewer),
+    PRIMARY KEY(Vid)
 );
 
 CREATE TABLE IF NOT EXISTS AlbumIn(
     Stack int NOT NULL,
     Album varchar(32) NOT NULL,
     FOREIGN KEY(Stack) REFERENCES AlbumStack(Sid) ON DELETE CASCADE,
-    FOREIGN KEY(Album) REFERENCES Album(Aid) ON DELETE CASCADE
+    FOREIGN KEY(Album) REFERENCES Album(Aid) ON DELETE CASCADE,
+    UNIQUE INDEX(Stack, Album)
 );
 
 CREATE TABLE IF NOT EXISTS Comment(

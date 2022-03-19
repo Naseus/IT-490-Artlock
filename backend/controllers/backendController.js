@@ -3,14 +3,16 @@ const LoginClient = require('../models/loginClient');
 const AlbumClient = require('../models/albumClient');
 const ReviewClient = require('../models/reviewClient');
 const CommentClient = require('../models/commentClient');
+const StackClient = require('../models/stackClient');
 
 const loginClient = new LoginClient();
 const albumClient = new AlbumClient();
 const reviewClient = new ReviewClient();
 const commentClient = new CommentClient();
+const stackClient = new StackClient();
 
 
-const RmqClient = require('../rabbitMQClient.js')
+const RmqClient = require('../rabbitMQClient.js');
 
 const rmqClient = new RmqClient(require('../dmzrabbitMQ.js'));
 
@@ -80,7 +82,8 @@ class BackendController {
 
         if(data.affectedRows === 1) {
             let userData = await loginClient.getOneUserByName(req.username);
-            return await loginClient.getOrCreateToken(userData[0]);
+            res.body = await loginClient.getOrCreateToken(userData[0]);
+            return res;
         }
         // Make sure that if there is a bug the user cannot get any information
         res.status = 500;
@@ -135,7 +138,8 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        return await albumClient.getByRatings();
+        res.body = await albumClient.getByRatings();
+        return res;
     }
 
     async TrendingAlbums(req, res) {
@@ -145,7 +149,8 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        return await albumClient.getByTrending();
+        res.body = await albumClient.getByTrending();
+        return res;
     }
 
     async CreateReview(req, res) {
@@ -155,7 +160,8 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        return await reviewClient.createReview(req.text, req.art_stars, req.stars, user[0].UserId, req.album);
+        res.body = await reviewClient.createReview(req.text, req.art_stars, req.stars, user[0].UserId, req.album);
+        return res;
     }
 
     async GetAlbumReviews(req, res) {
@@ -165,7 +171,8 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        return await reviewClient.getReviewsByAlbum(req.album)
+        res.body = await reviewClient.getReviewsByAlbum(req.album)
+        return res;
     }
 
     async EditReview(req, res) {
@@ -175,7 +182,8 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        return await reviewClient.updateReview(req.text, req.art_stars, req.stars, user[0].UserId, req.review);
+        res.body = await reviewClient.updateReview(req.text, req.art_stars, req.stars, user[0].UserId, req.review);
+        return res;
     }
 
     async DeleteReview(req, res) {
@@ -185,10 +193,12 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        if(req.review_id)
-            return await reviewClient.deleteReview(req.review_id, user[0].UserId);
-        res.status = 404;
-        res.body = "A review_id is required";
+        if(req.review_id) {
+            res.body = await reviewClient.deleteReview(req.review_id, user[0].UserId);
+        } else {
+            res.status = 404;
+            res.body = "A review_id is required";
+        }
         return res;
     }
 
@@ -199,7 +209,8 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        return await commentClient.createComment(req.review, req.text, user[0].UserId);
+        res.body = await commentClient.createComment(req.review, req.text, user[0].UserId);
+        return res;
     }
 
     async EditComment(req, res) {
@@ -209,10 +220,12 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        if(req.comment_id)
-            return await commentClient.updateComment(req.text, req.comment_id, user[0].UserId);
-        res.status = 404;
-        res.body = "A comment ID is required";
+        if(req.comment_id) {
+            res.body = await commentClient.updateComment(req.text, req.comment_id, user[0].UserId);
+        } else {
+            res.status = 404;
+            res.body = "A comment ID is required";
+        }
         return res;
     }
 
@@ -223,7 +236,8 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        return await commentClient.getAlbumComments(req.album);
+        res.body = await commentClient.getAlbumComments(req.album);
+        return res;
     }
 
     async DeleteComment(req, res) {
@@ -233,10 +247,90 @@ class BackendController {
             res.body = "Forbidden";
             return res;
         }
-        if(req.comment_id)
-            return await commentClient.deleteComment(req.comment_id, user[0].UserId);
-        res.status = 404;
-        res.body = "a comment_id is required";
+        if(req.comment_id) {
+            res.body = await commentClient.deleteComment(req.comment_id, user[0].UserId);
+        } else {
+            res.status = 404;
+            res.body = "a comment_id is required";
+        }
+        return res;
+    }
+
+    async CreateStack(req, res) {
+        let user = await stackClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        res.body = await stackClient.createStack(user[0].UserId, req.name);
+        return res;
+    }
+
+    async GetUserStacks(req, res) {
+        let user = await stackClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        res.body = await stackClient.getUserStacks(user[0].UserId);
+        return res;
+    }
+
+    async GetStackAlbums(req, res) {
+        let user = await stackClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        res.body = await stackClient.readStackAlbums(req.stack);
+        return res;
+    }
+
+    async AddToStack(req, res) {
+        let user = await stackClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        let data = await stackClient.addToStack(req.stack, req.album, user[0].UserId);
+        if(!data) {
+            res.status = 403;
+            res.body = "Forbidden";
+        } else {
+            res.body = data;
+        }
+        return res;
+    }
+
+    async DeleteFromStack(req, res) {
+        let user = await stackClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        let data = await stackClient.removeFromStack(req.stack, req.album, user[0].UserId);
+        if(!data) {
+            res.status = 403;
+            res.body = "Forbidden";
+        } else {
+            res.body = data;
+        }
+        return res;
+    }
+
+    async DeleteStack(req, res) {
+        let user = await stackClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        res.body = await stackClient.deleteStack(req.stack, user[0].UserId);
         return res;
     }
 }
