@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS Album(
     AlbumName varchar(255),
     Artist varchar(255),
     ArtistName varchar(255),
+    ReviewAverage float DEFAULT 0.0,
+    ArtAverage float DEFAULT 0.0,
     TrendScore float DEFAULT 0.0,
     LastReviewAverage float DEFAULT 0.0,
     PRIMARY KEY(Aid)

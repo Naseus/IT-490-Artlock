@@ -3,7 +3,6 @@ const mySQLClient = require('./mysqlClient.js');
 class AlbumClient extends mySQLClient {
     async createAlbums(albums) {
         let query = '';
-        let fields = [];
         let rtn = [];
         for(let album of albums) {
             query = 'INSERT INTO Album(Aid, AlbumArt, AlbumName, Artist, ArtistName, TrendScore, LastReviewAverage)'
@@ -19,14 +18,10 @@ class AlbumClient extends mySQLClient {
                 console.log(e);
             }
         }
-        console.log(query);
-        for(let field of fields) {
-            console.log(field);
-        }
     }
 
     async getByRatings() {
-        let query = 'SELECT * FROM Album ORDER BY LastReviewAverage DESC';
+        let query = 'SELECT * FROM Album ORDER BY ReviewAverage DESC';
         return await this.makeQuery(query);
     }
 
@@ -43,14 +38,13 @@ class AlbumClient extends mySQLClient {
     }
 
     async parseAndCreateAlbums(data){
-        console.log(data);
         data = data.filter(album=>album.album_type!='single');
         let albums = [];
         for (let album of data) {
             albums.push(
                 {
                     'Aid':album.id,
-                    'AlbumArt': album.images[0].url,
+                    'AlbumArt': album.images[1].url,
                     'AlbumName': album.name,
                     'Artist': album.artists[0].id,
                     'ArtistName': album.artists[0].name
@@ -59,7 +53,6 @@ class AlbumClient extends mySQLClient {
             delete(album['available_markets']);
         }
         // Create Albums with the same names in our db
-        console.log(JSON.stringify(albums));
         await this.createAlbums(albums);
         return albums;
     }

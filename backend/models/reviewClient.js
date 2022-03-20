@@ -1,10 +1,16 @@
 const mySQLClient = require('./mysqlClient.js');
+const updateAverage ='UPDATE Album'
+                    +' SET ReviewAverage=(SELECT AVG(Stars) FROM Review WHERE Album=?),'
+                    +' ArtAverage=(SELECT AVG(ArtStars) FROM Review WHERE Album=?)'
+                    +' WHERE Aid=?';
 
 class ReviewClient extends mySQLClient {
     async createReview(text, artStars, stars, user, album) {
         let query = 'INSERT INTO Review(ReviewText, ArtStars, Stars, Reviewer, Album)'
                     +' VALUES(?,?,?,?,?);';
-        return await super.makeQuery(query, [text, artStars, stars, user, album]);
+        let rtn = await super.makeQuery(query, [text, artStars, stars, user, album]);
+        await super.makeQuery(updateAverage, [album, album, album]);
+        return rtn;
     }
 
     async getReviewsByAlbum(album) {
@@ -18,7 +24,9 @@ class ReviewClient extends mySQLClient {
         let query = 'UPDATE Review SET'
                     +' ReviewText=?, ArtStars=?, Stars=?'
                     +' WHERE Reviewer=? AND Rid=?;';
-        return await super.makeQuery(query, [text, artStars, stars, user, rid]);
+        let rtn = await super.makeQuery(query, [text, artStars, stars, user, rid]);
+        await super.makeQuery(updateAverage, [album, album, album]);
+        return rtn;
     }
 
     async deleteReview(rid, user) {
