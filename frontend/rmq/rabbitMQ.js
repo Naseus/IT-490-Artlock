@@ -1,4 +1,4 @@
-{
+data = {
 "BROKER_HOST": "52.54.213.37",
 "BROKER_PORT": 5672,
 "USER": "test",
@@ -8,3 +8,5 @@
 "QUEUE": "testQueue",
 "AUTO_DELETE": true
 }
+
+module.exports = data;
