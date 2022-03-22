@@ -8,17 +8,23 @@
 </script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">ArtLockMusic</a>
+    <h class="navbar-brand">ArtLockMusic</h>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
       aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav me-auto">
-        <a class="nav-link active" aria-current="page" href="login.html">Trending</a>
-        <a class="nav-link" href="/top">Top</a>
-        <a class="nav-link" href="/recomendations">Recomendations</a>
+        <a class="nav-link active" href="/">Top</a>
+        <a class="nav-link" href="/trending">Trending</a>
+        <a class="nav-link" href="/recommendations">Recomendations</a>
       </div>
+      <div class="pt-4 pb-0 pe-4 pull-right">
+        <form class="navbar-form" role="search" action="/search/">
+          <input type="text" id="searchQuery" name="searchQuery" class="form-control" placeholder="Search" />
+          <button type="button" class="btn btn-default"><i class="glyphcon glyphcon-search"></i></button>
+        </form>
+    </div>
       <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="user-menu" data-bs-toggle="dropdown" aria-expanded="false">
           Username
