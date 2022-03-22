@@ -13,21 +13,22 @@ class Client {
     }
 
     async sendData(msg){
+        console.log(msg);
         let conn = await amqp.connect(this.mqUrl)
         let channel = await conn.createChannel();
         channel.publish(this.exchange, '*', Buffer.from(JSON.stringify(msg)));
 
         let rqueue = this.queue + '_response';
-        await channel.assertQueue(rqueue, {'durable':false});
+        await channel.assertQueue(rqueue, {'durable':false, 'autoDelete':true});
         await channel.bindQueue(rqueue, this.exchange, '*.response');
 
         let res = false;
         let i = 0;
-        while(!res) {
+        while(!res && i < 3000) {
             res = await channel.get(rqueue, {'noAck':true});
             i++;
         }
-        //channel.ackAll();
+        channel.ackAll();
 
         if(!res)
             return false;
