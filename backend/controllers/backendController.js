@@ -167,6 +167,17 @@ class BackendController {
         return res;
     }
 
+    async Album(req, res) {
+        let user = await albumClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        res.body = await albumClient.getOneAlbum(req.album);
+        return res;
+    }
+
     async CreateReview(req, res) {
         let user = await reviewClient.authToken(req.token);
         if(!user[0]) {
