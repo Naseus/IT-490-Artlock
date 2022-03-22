@@ -20,9 +20,9 @@ router.get('/', async (req,res) => {
     if (data.status === 403) {
         res.clearCookie('token');
         res.redirect('/login');
+    } else {
+      res.render('index', {albums:data.body.filter(album=>album.ReviewAverage > 0)});
     }
-
-    res.render('index', {albums: data.body});
 });
 
 router.get('/trending', async (req, res)=>{
@@ -36,8 +36,9 @@ router.get('/trending', async (req, res)=>{
     if(data.status === 403) {
         res.clearCookie('token');
         res.redirect('/login');
+    } else {
+      res.render('index', {albums:data.body.filter(album=>album.ReviewAverage > 0)});
     }
-    res.render('index', {albums:data.body});
 });
 
 router.get('/recommendations', async (req, res)=>{
@@ -53,7 +54,7 @@ router.get('/recommendations', async (req, res)=>{
         res.redirect('/login');
     }
 
-    if(data.body.error.status === 400) {
+    if(typeof data.body.error !=='undefined' && data.body.error.status === 400) {
         res.render('index', {
             message:'No recommendations are available at this time. '
             +'leave a review and let us know what you like'
@@ -127,5 +128,6 @@ router.get('/search', async (req, res)=>{
 });
 
 router.get('/album/:Aid/', detailController.get);
+router.post('/album/:Aid/', detailController.post);
 
 module.exports = router
