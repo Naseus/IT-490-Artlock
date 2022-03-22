@@ -10,20 +10,12 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <%- include('./partials/header-full.ejs') %>
-    <ul class="list-group list-group-flush">
-    <% for(album of albums) { %>
-    <li class="list-group-item">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-2 col-md-2">
-            <img class="img-rounded-lg" src= <%= album.AlbumArt %> >
-          </div>
-          <div class="col-md-2 col-md-2">
-          <p class="col-md-2 col-md-2"><%= album.AlbumName %></p>
-        </div>
-      </div>
-    </li>
-    <% } %>
-    </ul>
+  <%- include('./partials/header-full.ejs') %>
+  <% if(typeof albums !== 'undefined') { %>
+    <%- include('./partials/album-list.ejs', {albums:albums}) %>
+  <% } else if(typeof message !== 'undefined') { %>
+    <div class=" pt-5 d-flex justify-content-center">
+      <h2 class="text-muted"><%= message %></h2>
+    </div>
+  <% } %>
 </body>
