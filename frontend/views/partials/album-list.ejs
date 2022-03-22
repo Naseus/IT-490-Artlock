@@ -1,0 +1,22 @@
+<ul class="list-group list-group-flush">
+  <% let i = 1; %>
+  <!-- TODO: Add css for image scaling -->
+  <% for(album of albums) { %>
+    <li class="list-group-item">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-2 col-md-2">
+            <img src= <%= album.AlbumArt %>>
+          </div>
+          <div class="ps-5 col-md-9 col-md-2">
+            <a href='/album/<%= album.Aid %>' class='link-dark h4'><%= album.AlbumName %></a>
+            <p class='text-muted'><%= album.ArtistName %></p>
+          </div>
+          <div class="col-md-1 float-right">
+            <h1> <%= i++ %> </h1>
+          </div>
+        </div>
+      </div>
+    </li>
+  <% } %>
+</ul>
