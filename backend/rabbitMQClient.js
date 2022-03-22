@@ -18,20 +18,20 @@ class Client {
         channel.publish(this.exchange, '*', Buffer.from(JSON.stringify(msg)));
 
         let rqueue = this.queue + '_response';
-        await channel.assertQueue(rqueue, {'durable':false});
-        await channel.bindQueue(rqueue, this.exchange, '*.response');
-
+        	await channel.assertQueue(rqueue, {'autDelete':true});
+        	await channel.bindQueue(rqueue, this.exchange, '*.response');
         let res = false;
         let i = 0;
         while(!res) {
             res = await channel.get(rqueue, {'noAck':true});
             i++;
         }
-        //channel.ackAll();
+        channel.ackAll();
 
         if(!res)
             return false;
 
+	channel.deleteQueue(rqueue);
         channel.close();
         conn.close();
 
