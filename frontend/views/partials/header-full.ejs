@@ -1,0 +1,39 @@
+<!doctype html>
+<script>
+  function logout() {
+    window.localStorage.removeItem('user');
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    window.location.replace('/login');
+  }
+</script>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">ArtLockMusic</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav me-auto">
+        <a class="nav-link active" aria-current="page" href="login.html">Trending</a>
+        <a class="nav-link" href="/top">Top</a>
+        <a class="nav-link" href="/recomendations">Recomendations</a>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="user-menu" data-bs-toggle="dropdown" aria-expanded="false">
+          Username
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="user-menu">
+          <li><a class="dropdown-item" href="/user-stacks/">Profile</a></li>
+          <li><a class="dropdown-item" href="/login/"  onclick="logout();return false;">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+<script>
+  let user = localStorage.getItem('user');
+  if(user) {
+    document.getElementById('user-menu').innerHTML = user;
+  }
+</script>
+</nav>
