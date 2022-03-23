@@ -123,7 +123,7 @@ class BackendController {
         let tracks = [];
         let i = 0;
         for(let ele of reviewedAlbums){
-            if(i++ > 5){
+            if(++i > 5){
                 break;
             }
             tracks.push(ele['Artist']);
