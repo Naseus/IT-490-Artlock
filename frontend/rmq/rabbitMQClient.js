@@ -24,7 +24,7 @@ class Client {
 
         let res = false;
         let i = 0;
-        while(!res && i < 30000) {
+        while(!res && i < 5000) {
             res = await channel.get(rqueue, {'noAck':true});
             i++;
         }
