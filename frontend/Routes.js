@@ -3,6 +3,8 @@ const RmqData = require('./rmq/rabbitMQ');
 const rmqClient = new RmqClient(RmqData);
 
 const detailController = require('./controllers/detailController.js')
+const profileController = require('./controllers/profileController')
+const stackController = require('./controllers/stackController')
 
 const express = require('express');
 
@@ -28,6 +30,7 @@ router.get('/', async (req,res) => {
 router.get('/trending', async (req, res)=>{
     if(!req.cookies.token) {
         res.redirect('/login');
+        return;
     }
     let data = await rmqClient.sendData({
         'type':'TrendingAlbums',
@@ -66,6 +69,7 @@ router.get('/recommendations', async (req, res)=>{
 
 router.get('/login', (req,res) => {
     res.render('login');
+    res.end();
 });
 
 router.post('/login', async (req,res) => {
@@ -129,5 +133,10 @@ router.get('/search', async (req, res)=>{
 
 router.get('/album/:Aid/', detailController.get);
 router.post('/album/:Aid/', detailController.post);
+
+router.get('/profile/', profileController.get);
+router.post('/profile/', profileController.post);
+
+router.get('/stack/:Sid', stackController.get);
 
 module.exports = router

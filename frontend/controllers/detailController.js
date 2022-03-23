@@ -43,16 +43,26 @@ module.exports = {
             'token': req.cookies.token,
             'album':req.params.Aid
         });
+        let stacks = await rmqClient.sendData({
+            'type': 'GetUserStacks',
+            'token': req.cookies.token,
+        });
 
         album = album.body[0];
         comments = comments.body;
         reviews = reviews.body;
+        stacks = stacks.body;
 
-        res.render('album',{album:album, reviews:reviews,comments:comments});
+        res.render('album',{
+          album:album,
+          reviews:reviews,
+          comments:comments,
+          stacks:stacks,
+        });
     },
 
     async post(req, res) {
-        console.log(res.body)
+        console.log('ASDFGASG ASDFA DSFAOFASDOFO POSTING');
         if(req.body.comment) {
             postComment(req, res);
         }

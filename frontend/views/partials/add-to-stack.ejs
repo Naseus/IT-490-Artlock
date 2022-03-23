@@ -1,0 +1,17 @@
+<!doctype html>
+ <button class="btn btn-primary bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#stack-collapse" aria-expanded="false" aria-controls="collapseExample">
+      Add To Stack
+  </button>
+</p>
+<div class="collapse" id="stack-collapse">
+  <div class="card card-body">
+  <form action='/profile' method='POST'>
+    <input type="hidden" name="album" value=<%= album.Aid %>>
+    <% for(let i = 0; i < stacks.length; i++) { %>
+    <input type="radio" name="stack" id="stack_<%= stacks[i] %>" value="<%= stacks[i].Sid %>"><%= stacks[i].StackName %><br>
+    <% } %>
+    <input type="radio" name="stack" id="stackMiss" value="">new stack <input type="text" name="newStack"/>
+    <input type="submit" value="add or create">
+  </form>
+  </div>
+</div>
