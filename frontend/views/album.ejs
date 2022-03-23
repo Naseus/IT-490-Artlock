@@ -27,6 +27,9 @@
         </div>
         <iframe class="p-2 col-md-3" src="https://open.spotify.com/embed/album/<%= album.Aid%>" width="250" height="330" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
       </div>
+      <div class="fol-md-1">
+          <%- include('./partials/add-to-stack.ejs',{stacks:stacks,album:album}) %>
+      </div>
       <hr>
       <div class="float-container">
         <h3>Reviews</h3>
@@ -48,6 +51,8 @@
               <li class="list-group-item">
                 <div class="card">
                   <h6 class="text-muted card-title"><%= reviews[i].Username %></h6>
+                  <p class="fw-bold card-text">Album: <%= reviews[i].Stars %>/5</p>
+                  <p class="fw-bold card-text">Album Art: <%= reviews[i].Stars %>/5</p>
                   <p class="card-text"><%= reviews[i].ReviewText %></p>
                   <div class="card-body">
                     <p class="fw-bold">Comment</p>

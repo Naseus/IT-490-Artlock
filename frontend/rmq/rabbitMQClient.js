@@ -33,7 +33,6 @@ class Client {
         if(!res)
             return false;
 
-         channel.deleteQueue(rqueue);
         channel.close();
         conn.close();
         console.log('recived: ' + res.content.toString());

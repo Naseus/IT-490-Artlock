@@ -121,7 +121,11 @@ class BackendController {
         }
         let reviewedAlbums = await albumClient.getReviewedAlbums(user[0].UserId);
         let tracks = [];
+        let i = 0;
         for(let ele of reviewedAlbums){
+            if(i++ > 5){
+                break;
+            }
             tracks.push(ele['Artist']);
         }
         let dmzReq = {'type':'Recommendation', 'body':tracks};
