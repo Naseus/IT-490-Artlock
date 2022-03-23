@@ -121,7 +121,11 @@ class BackendController {
         }
         let reviewedAlbums = await albumClient.getReviewedAlbums(user[0].UserId);
         let tracks = [];
+        let i = 0;
         for(let ele of reviewedAlbums){
+            if(++i > 5){
+                break;
+            }
             tracks.push(ele['Artist']);
         }
         let dmzReq = {'type':'Recommendation', 'body':tracks};
@@ -164,6 +168,17 @@ class BackendController {
             return res;
         }
         res.body = await albumClient.getByTrending();
+        return res;
+    }
+
+    async Album(req, res) {
+        let user = await albumClient.authToken(req.token);
+        if(!user[0]) {
+            res.status = 403;
+            res.body = "Forbidden";
+            return res;
+        }
+        res.body = await albumClient.getOneAlbum(req.album);
         return res;
     }
 

@@ -13,16 +13,18 @@ class Client {
     }
 
     async sendData(msg){
+        console.log(msg);
         let conn = await amqp.connect(this.mqUrl)
         let channel = await conn.createChannel();
         channel.publish(this.exchange, '*', Buffer.from(JSON.stringify(msg)));
 
         let rqueue = this.queue + '_response';
-        	await channel.assertQueue(rqueue, {'autDelete':true});
-        	await channel.bindQueue(rqueue, this.exchange, '*.response');
+        await channel.assertQueue(rqueue, {'durable':false, 'autoDelete':true});
+        await channel.bindQueue(rqueue, this.exchange, '*.response');
+
         let res = false;
         let i = 0;
-        while(!res) {
+        while(!res && i < 5000) {
             res = await channel.get(rqueue, {'noAck':true});
             i++;
         }
@@ -31,9 +33,9 @@ class Client {
         if(!res)
             return false;
 
-	channel.deleteQueue(rqueue);
         channel.close();
         conn.close();
+        console.log('recived: ' + res.content.toString());
 
         return JSON.parse(res.content.toString());
     }
