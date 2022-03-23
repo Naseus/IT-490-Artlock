@@ -38,7 +38,7 @@ class AlbumClient extends mySQLClient {
     async getReviewedAlbums(user) {
         let query = 'SELECT * FROM Album'
                     +' INNER JOIN Review ON Album.Aid=Review.Album'
-                    +' WHERE Review.Reviewer=?;';
+                    +' WHERE Review.Reviewer=? ORDER BY ReviewAverage DESC;';
         return await this.makeQuery(query, [user]);
     }
 
