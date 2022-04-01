@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 const db_conn = require('./db_conn.js');
+const Mutex = require('async-mutex').Mutex;
+const mutex = new Mutex();
 
 class mySqlClient {
     _makeQuery(query, fields, successCallback, errorCallback) {
@@ -15,7 +17,7 @@ class mySqlClient {
         });
     }
 
-    makeQuery(query, fields){
+    makePromise(query, fields){
         return new Promise ((resolve, reject) =>{
             this._makeQuery(query, fields, (data)=>{
                 resolve(data);
@@ -23,6 +25,20 @@ class mySqlClient {
                 reject(err);
             });
         });
+    }
+    
+    async makeQuery(query, fields){
+        let lock = await mutex.acquire();
+	let data;
+	try {
+            data = this.makePromise(query, fields);
+	} catch(e){
+            data=e;
+	    console.log(e);
+	} finally{
+            lock();
+	}
+	return data;
     }
 
     async authToken(token) {
