@@ -7,9 +7,12 @@ const profileController = require('./controllers/profileController')
 const stackController = require('./controllers/stackController')
 
 const express = require('express');
+const loginController = require('./controllers/loginController');
 
 const router = new express.Router();
 
+// Album list logic
+//TODO: Refactor logic into a controller
 router.get('/', async (req,res) => {
     if(!req.cookies.token) {
         res.redirect('/login');
@@ -67,54 +70,13 @@ router.get('/recommendations', async (req, res)=>{
 
 });
 
-router.get('/login', (req,res) => {
-    res.render('login');
-    res.end();
-});
+// Login and register routes
+router.get('/login', loginController.get);
+router.post('/login', loginController.post);
+router.get('/register', loginController.getRegister);
+router.post('/register', loginController.postRegister);
 
-router.post('/login', async (req,res) => {
-    if(req.body.username && req.body.password) {
-        let data = await rmqClient.sendData({
-            'type':'Login',
-            'username':req.body.username,
-            'password':req.body.password
-        });
-        res.cookie('token', data.body.token);
-        if(data.status === 200) {
-            res.render('login',{token:data.body.token, user:req.body.username});
-        }
-    }
-    res.render('login');
-});
-
-router.get('/register', async (req, res) =>{
-    res.render('register');
-});
-
-router.post('/register', async (req,res) => {
-    console.log(req.body);
-    if (req.body.password !== req.body.confirmpassword) {
-        res.render('register',{message:"Passwords don't match"});
-    }
-    if(req.body.username && req.body.password) {
-        let data = await rmqClient.sendData({
-            'type':'Register',
-            'username':req.body.username,
-            'password':req.body.password
-        });
-        res.cookie('token', data.body.token);
-        if(data.status === 200) {
-            res.render('login',{token:data.body.token, user:req.body.username});
-            res.end();
-        }
-        else if(data.status === 403) {
-            res.render('register',{message:"A user with that name already exists"});
-        } else {
-            res.render('register');
-        }
-    }
-});
-
+// Logic for the search
 router.get('/search', async (req, res)=>{
     if(!req.cookies.token && req.query.searchQuery) {
         res.redirect('/login');
@@ -131,12 +93,15 @@ router.get('/search', async (req, res)=>{
     res.render('index', {albums:data.body});
 });
 
+// Album Routes
 router.get('/album/:Aid/', detailController.get);
 router.post('/album/:Aid/', detailController.post);
 
+// Profile Routes
 router.get('/profile/', profileController.get);
 router.post('/profile/', profileController.post);
 
+// Stack Routes
 router.get('/stack/:Sid', stackController.get);
 
 module.exports = router

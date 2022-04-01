@@ -48,6 +48,7 @@ module.exports = {
             'token': req.cookies.token,
         });
 
+        //TODO: Change backend
         album = album.body[0];
         comments = comments.body;
         reviews = reviews.body;
