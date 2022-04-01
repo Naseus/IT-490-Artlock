@@ -12,6 +12,7 @@ async function postReview(req, res) {
         'stars':req.body.stars,
         'album':req.params.Aid,
     });
+    // Redirect to the current page. This should be used for most posts
     res.redirect('.');
 }
 
@@ -28,6 +29,9 @@ async function postComment(req, res) {
 
 module.exports = {
     async get(req, res) {
+        // Request all the RMQ data from the database
+        // TODO: Posible refactor -- move this part of the code into a proper
+        //       model
         let album = await rmqClient.sendData({
             'type': 'Album',
             'token': req.cookies.token,
@@ -48,12 +52,14 @@ module.exports = {
             'token': req.cookies.token,
         });
 
-        //TODO: Change backend
+        // TODO: Change backend to pass the album without the array
+        // King if this is stil here let me know
         album = album.body[0];
         comments = comments.body;
         reviews = reviews.body;
         stacks = stacks.body;
 
+        // Render the album view with all the api data
         res.render('album',{
           album:album,
           reviews:reviews,
@@ -62,8 +68,9 @@ module.exports = {
         });
     },
 
+    // The post function will check for a hidden input that identifies the form
+    // and call the apropriate helper function
     async post(req, res) {
-        console.log('ASDFGASG ASDFA DSFAOFASDOFO POSTING');
         if(req.body.comment) {
             postComment(req, res);
         }
