@@ -12,22 +12,30 @@ class Client {
         this.exchange = mqData['EXCHANGE'];
     }
 
+    // Function for the client to send data to a consumer
+    // The client sends a mesage and then waits for a response on the response
+    // queue(rqueue).
     async sendData(msg){
         console.log(msg);
         let conn = await amqp.connect(this.mqUrl)
         let channel = await conn.createChannel();
         channel.publish(this.exchange, '*', Buffer.from(JSON.stringify(msg)));
 
+        // Create the queue with the approprate name
         let rqueue = this.queue + '_response';
         await channel.assertQueue(rqueue, {'durable':false, 'autoDelete':true});
         await channel.bindQueue(rqueue, this.exchange, '*.response');
 
         let res = false;
         let i = 0;
+        // Attempt to get the data from rqueue. If the get fails to many times
+        // the client purges the queue
         while(!res && i < 5000) {
             res = await channel.get(rqueue, {'noAck':true});
             i++;
         }
+        // TODO: Look into a more scalabe way to handle the extra requests. This
+        //       might not work with multible clients.
         channel.ackAll();
 
         if(!res)
