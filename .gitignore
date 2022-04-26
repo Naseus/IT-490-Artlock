@@ -1,5 +1,8 @@
 */*/db_conn.js
 node_modules/*
-*/node_modules/*
 */spotifyInfo.js
+*/rabbitMQ.js
+*/dmzrabbitMQ.js
+
+*/node_modules/*
 .vscode/
