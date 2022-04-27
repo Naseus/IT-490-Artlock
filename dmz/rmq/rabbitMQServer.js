@@ -8,8 +8,8 @@ class Server {
                 + `:${mqData["BROKER_PORT"]}`
                 + `/${mqData["VHOST"]}`);
 
-        this.queue = mqData['QUEUE']
-        this.exchange = mqData['EXCHANGE']
+        this.queue = mqData['QUEUE'];
+        this.exchange = mqData['EXCHANGE'];
         this.handler = handler
     }
 
