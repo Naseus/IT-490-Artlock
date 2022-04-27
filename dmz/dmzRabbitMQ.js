@@ -1,6 +1,6 @@
 let data = {
-"__BROKER_HOST": "52.54.213.37",
-"BROKER_HOST": "127.0.0.1",
+"BROKER_HOST": "10.128.0.2",
+"__BROKER_HOST": "127.0.0.1",
 "BROKER_PORT": 5672,
 "USER": "test",
 "PASSWORD": "test",
