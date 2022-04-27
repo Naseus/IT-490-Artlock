@@ -103,6 +103,7 @@ class BackendController {
 
         let data = await rmqClient.sendData(dmzReq);
         if(!data) {
+	    console.log(data);
             res.status = 500;
             res.body = 'API fail';
             return res;

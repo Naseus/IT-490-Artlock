@@ -7,8 +7,10 @@ class mySqlClient {
     _makeQuery(query, fields, successCallback, errorCallback) {
         let connection = mysql.createConnection(db_conn);
         connection.connect((err) => {
-            if(err)
+            if(err) {
+                console.log(err);
                 return err;
+	    }
             connection.query(query, fields, (err, results) =>{
                     if(err)
                         return errorCallback(err);

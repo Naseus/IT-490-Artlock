@@ -1,4 +1,5 @@
 const amqp = require('amqplib');
+const crypto = require('crypto');
 
 class Client {
     constructor(mqData) {
@@ -12,28 +13,55 @@ class Client {
         this.exchange = mqData['EXCHANGE'];
     }
 
+    // Function for the client to send data to a consumer
+    // The client sends a mesage and then waits for a response on the response
+    // queue(rqueue).
     async sendData(msg){
+        console.log(msg);
+        // Hash the message and set it as the correlationId
+        let corrId = crypto.createHash('sha1').update(JSON.stringify(msg)).digest('base64');
+
         let conn = await amqp.connect(this.mqUrl)
         let channel = await conn.createChannel();
-        channel.publish(this.exchange, '*', Buffer.from(JSON.stringify(msg)));
+        channel.publish(
+            this.exchange,
+            '*',
+            Buffer.from(JSON.stringify(msg)),
+            {"correlationId":corrId});
 
+        // Create the queue with the approprate name
         let rqueue = this.queue + '_response';
-        	await channel.assertQueue(rqueue, {'autDelete':true});
-        	await channel.bindQueue(rqueue, this.exchange, '*.response');
+        await channel.assertQueue(rqueue, {'durable':false, 'autoDelete':true});
+        await channel.bindQueue(rqueue, this.exchange, '*.response');
+        console.log('made');
+
         let res = false;
         let i = 0;
-        while(!res) {
-            res = await channel.get(rqueue, {'noAck':true});
+        // Attempt to get the data from rqueue. If the get fails to many times
+        // the client purges the queue
+        while(i < 5000) {
             i++;
+            res = await channel.get(rqueue, {
+                'noAck':true,
+            });
+            if(!res) {
+                continue;
+            }
+            if (res.properties.correlationId === corrId) {
+                break;
+            }
+            console.log('made it');
+            channel.publish(this.exchange, '*.response', res.content, {
+                "correlationId":res.properties.correlationId
+            });
         }
-        channel.ackAll();
 
         if(!res)
             return false;
 
-	channel.deleteQueue(rqueue);
         channel.close();
         conn.close();
+        console.log('recived: ' + res.content.toString());
 
         return JSON.parse(res.content.toString());
     }
