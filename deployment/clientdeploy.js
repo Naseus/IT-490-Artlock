@@ -1,9 +1,9 @@
-const RmqClient = require('./deployment/rmq/rabbitMQClient');
-const RmqData = require('./deployment/rmq/rabbitMQ');
+const RmqClient = require('./rmq/rabbitMQClient');
+const RmqData = require('./rmq/rabbitMQ');
 const rmqClient = new RmqClient(RmqData);
 
 const fs = require("fs");
-const dirname ='';
+const dirname ='../';
 let data = {};
 
 console.log(process.argv.length);
@@ -34,7 +34,7 @@ function getFilesSync(fPath, ignore, response) {
         response = Object.assign(getFilesSync(file_name, ignore, response));
       }
     } else {
-      response[file_name] = fs.readFileSync(file_name);
+      response[file_name] = fs.readFileSync(dirname+file_name);
     }
   }
   return response;
