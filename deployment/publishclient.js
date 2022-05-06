@@ -43,4 +43,4 @@ function getFilesSync(fPath, ignore, response) {
 data['files'] = getFilesSync(data['pkg_type'],["node_modules", ""]);
 console.log(data);
 
-rmqClient.sendData(data);
+rmqClient.sendData(data, 'publish');

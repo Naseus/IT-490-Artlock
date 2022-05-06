@@ -24,7 +24,8 @@ class Server {
         }
     }
 
-    run() {
+    run(corrId) {
+        corrId = corrId || false;
         amqp.connect(this.mqUrl, (error0, connection) => {
             if (error0) {
                 throw error0;
@@ -41,8 +42,14 @@ class Server {
 
                 channel.consume(this.queue, async (msg) => {
                     console.log(`Received ${msg.content.toString()}"`);
-                    await this.reply(msg, channel)
-                    channel.ack(msg);
+                    if(corrId || corrId === msg.properties.correlationId) {
+                        channel.publish(this.exchange, '*.response', msg.content, {
+                            "correlationId":msg.properties.correlationId
+                        });
+                    } else {
+                        await this.reply(msg, channel)
+                        channel.ack(msg);
+                    }
                 });
             });
         });

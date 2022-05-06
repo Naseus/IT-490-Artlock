@@ -18,6 +18,14 @@ class DeployClient extends mySQLClient {
             );
         }
     }
+
+    async listPkg() {
+        return await super.makeQuery('SELECT Title FROM Package');
+    }
+
+    async getPkg() {
+        return await super.makeQuery('SELECT * FROM Package INNER JOIN File');
+    }
 }
 
 module.exports = DeployClient;

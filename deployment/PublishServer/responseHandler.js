@@ -10,11 +10,12 @@ class ResponseHandler {
         let obj;
         try {
             obj = JSON.parse(msg.content);
+            await deploy.createPackage(obj);
         } catch(e){
             return this.error(500, e);
         }
 
-        let rtn = {"status":200, "body":"we doing thing"};
+        let rtn = {"status":200, "body":"ok"};
         return Buffer.from(JSON.stringify(rtn));
     }
 }
