@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-CREATE  BASE IF NOT EXISTS Dev;
-USE Dev;
-
-CREATE TABLE IF NOT EXISTS Package(
-    Title (Primary Key)
-    On_Text 
-    On_Dev varchar
-    Type
-);
-
-CREATE Table IF NOT EXIST Package
-    Context Foreign Keys
-    Tid varchar(32)
-
-);
-
-CREATE TABLE IF NOT EXISTS Album(
-     Aid varchar(32) NOT NULL, 
-     AlbumArt varchar(255),
-     AlbumName varchar(255), 
-     Artist varchar(255),
-     ArtistName varchar(255),
-     LastReviewAverage float DEFAULT 0.0,
-     PRIMARY KEY(Aid)
-        );
-
-=======
 CREATE DATABASE IF NOT EXISTS Deployment;
 USE Deployment;
 
@@ -45,4 +17,3 @@ CREATE TABLE IF NOT EXISTS File(
     FOREIGN KEY(FileIn) REFERENCES Package(Title) ON DELETE CASCADE,
     PRIMARY KEY(Fid)
 );
->>>>>>> 9eb247f5dd641407de3fd04b825f3d8b26761c8d
