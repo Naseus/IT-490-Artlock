@@ -28,18 +28,17 @@ class ResponseHandler {
              fs.rmdirSync(path + obj.pkg_type, {recursive:true,});
 	 } catch(e){console.log(e);}
         for(let [file, content] of Object.entries(obj.files)){
+	    console.log(`Writing ${file}`);
     	    this.ensureDirectoryExistence(file);
             fs.open(this.path + file,'w', (err, f)=>{
                     if(err) {
                         console.log(`Failed to write ${file}: ${err}`);
 			return;
                     }
-                fs.write(f, content.toString(), (err, data)=>{
-			return data;
-                });
-	        return f;
+                fs.writeSync(f, Buffer.from(content.data).toString());
             });
         }
+	console.log('done');
 
         let rtn = {"status":200, "body":"pkg saved"};
         return Buffer.from(JSON.stringify(rtn));
