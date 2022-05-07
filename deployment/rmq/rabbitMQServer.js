@@ -15,17 +15,16 @@ class Server {
 
     async reply(msg, channel) {
         // Formating the routing key to match the php client
-        let replyTo = msg.fields.routingKey + '.response';
+        let replyTo = this.queue + '_response';
 
         if(replyTo) {
-            channel.publish(this.exchange, replyTo, await this.handler.handle(msg), {
+            channel.publish('', replyTo, await this.handler.handle(msg), {
                 "correlationId":msg.properties.correlationId
             });
         }
     }
 
-    run(corrId) {
-        corrId = corrId || false;
+    run() {
         amqp.connect(this.mqUrl, (error0, connection) => {
             if (error0) {
                 throw error0;
@@ -41,16 +40,9 @@ class Server {
                 console.log(`Waiting for messages at ${this.mqUrl} in ${this.queue}`);
 
                 channel.consume(this.queue, async (msg) => {
-                    if(corrId && corrId !== msg.properties.correlationId) {
-                        console.log(corrId+ ' ' +msg.properties.correlationId);
-                        channel.publish(this.exchange, '*.response', msg.content, {
-                            "correlationId":msg.properties.correlationId
-                        });
-                    } else {
-                        console.log(`Received ${msg.content.toString()}"`);
-                        await this.reply(msg, channel)
-                        channel.ack(msg);
-                    }
+                    console.log(`Received ${msg.content.toString()}"`);
+                    await this.reply(msg, channel)
+                    channel.ack(msg);
                 });
             });
         });

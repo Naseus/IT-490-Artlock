@@ -5,9 +5,8 @@ data = {
 "PASSWORD": "test",
 "VHOST": "deploy",
 "EXCHANGE": "deployExchange",
-"QUEUE": "deployQueue",
 "AUTO_DELETE": true,
-"CID":"test_backend"
+"QUEUE":"test_backend"
 }
 
 module.exports = data;
