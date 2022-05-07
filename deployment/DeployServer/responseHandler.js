@@ -1,28 +1,45 @@
+const  fs = require('fs');
+const path = require('path');
+
 class ResponseHandler {
+    path = '/home/tdevries4i/';
+    ensureDirectoryExistence(filePath) {
+    	let dirname = path.dirname(filePath);
+      	if (fs.existsSync(this.path + dirname)) {
+    		return true;
+  	}
+ 	this.ensureDirectoryExistence(dirname);
+  	fs.mkdirSync(this.path + dirname);
+    }
+
     error(err, msg) {
         return Buffer.from(`{"status":${err}, "body":"${msg}"}`);
     }
 
     async handle(msg){
-        let path = '../'
         let obj;
+
         try {
             obj = JSON.parse(msg.content);
         } catch(e){
             return this.error(500, e);
         }
-        await fs.rm(path + obj.pkg_type, {recursive:true, force:'true'});
-        await fs.mkdir(path + obj.pkg_type);
-        for(let [file, content] of Object.entries(msg.files)){
-            fs.open(path + file,'w', (err, f)=>{
-                fs.write(f, content.toString(), (err, data)=>{
+	 try {
+             fs.rmdirSync(path + obj.pkg_type, {recursive:true,});
+	 } catch(e){console.log(e);}
+        for(let [file, content] of Object.entries(obj.files)){
+    	    this.ensureDirectoryExistence(file);
+            fs.open(this.path + file,'w', (err, f)=>{
                     if(err) {
                         console.log(`Failed to write ${file}: ${err}`);
+			return;
                     }
+                fs.write(f, content.toString(), (err, data)=>{
+			return data;
                 });
+	        return f;
             });
         }
-        fs.write()
 
         let rtn = {"status":200, "body":"pkg saved"};
         return Buffer.from(JSON.stringify(rtn));

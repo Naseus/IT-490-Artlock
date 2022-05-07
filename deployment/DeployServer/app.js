@@ -5,4 +5,4 @@ const Handler = require('./responseHandler');
 
 let server = new Server(mqData, new Handler());
 
-server.run(mqData.CID);
+server.run();

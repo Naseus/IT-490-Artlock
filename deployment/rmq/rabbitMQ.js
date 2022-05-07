@@ -7,7 +7,7 @@ data = {
 "EXCHANGE": "deployExchange",
 "QUEUE": "deployQueue",
 "AUTO_DELETE": true,
-"CID":"test_frontend"
+"CID":"test_backend"
 }
 
 module.exports = data;
