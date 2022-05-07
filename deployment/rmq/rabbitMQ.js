@@ -6,7 +6,7 @@ data = {
 "VHOST": "deploy",
 "EXCHANGE": "deployExchange",
 "AUTO_DELETE": true,
-"QUEUE":"test_backend"
+"QUEUE":"deployQueue"
 }
 
 module.exports = data;

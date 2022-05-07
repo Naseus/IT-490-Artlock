@@ -8,7 +8,7 @@ class DeployClient extends mySQLClient {
             [pkg.pkg_name, pkg.pkg_type]
         );
         for(const[file, content] of Object.entries(pkg.files)) {
-            let data = await new Blob([content]).text();
+            let data = Buffer.from(content.data).toString();
             await super.makeQuery(
                 'INSERT INTO File(FileIn, FileName, content) VALUES(?,?,?)',
                 [pkg.pkg_name, file, data]
