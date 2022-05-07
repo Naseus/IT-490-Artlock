@@ -42,7 +42,7 @@ async function main() {
         let msg = formatData(data);
         await deploy.setOnTest(data);
         console.log(msg);
-        rmqClient.sendData(msg, 'test_' + msg.pkg_type);
+        await rmqClient.sendData(msg);
         process.exit();
     }
     if(command === 'deploy') {

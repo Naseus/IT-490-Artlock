@@ -29,12 +29,12 @@ class DeployClient extends mySQLClient {
 
     async setOnTest(pkg){
         // Make old pakage false
-        let query = 'UPDATE Package SET OnTest=false WHERE Type=?';
+        let query = 'UPDATE Package SET Testing=false WHERE Type=?';
         let fields = [pkg.pkg_type];
         await super.makeQuery(query, fields);
 
         // Make new package true
-        query = 'UPDATE Package SET OnTest=true WHERE Title=?';
+        query = 'UPDATE Package SET Testing=true WHERE Title=?';
         fields = [pkg.pkg_name];
         return await super.makeQuery(query, fields);
     }
