@@ -16,16 +16,16 @@ class Client {
     // Function for the client to send data to a consumer
     // The client sends a mesage and then waits for a response on the response
     // queue(rqueue).
-    async sendData(msg, corrId){
+    async sendData(msg){
         console.log(msg);
         // Hash the message and set it as the correlationId
-        corrId = corrId || crypto.createHash('sha1').update(JSON.stringify(msg)).digest('base64');
+        let corrId = crypto.createHash('sha1').update(JSON.stringify(msg)).digest('base64');
 
         let conn = await amqp.connect(this.mqUrl)
         let channel = await conn.createChannel();
         channel.publish(
-            this.exchange,
-            '*',
+            '',
+            this.queue,
             Buffer.from(JSON.stringify(msg)),
             {"correlationId":corrId});
 

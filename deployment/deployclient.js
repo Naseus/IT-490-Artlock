@@ -42,6 +42,10 @@ async function main() {
         let msg = formatData(data);
         await deploy.setOnTest(data);
         console.log(msg);
+
+        console.log(rmqClient.queue);
+        rmqClient.queue = 'test_' + msg.pkg_type;
+        console.log(rmqClient.queue);
         await rmqClient.sendData(msg);
         process.exit();
     }
