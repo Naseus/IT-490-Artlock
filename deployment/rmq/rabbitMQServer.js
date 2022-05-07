@@ -41,12 +41,13 @@ class Server {
                 console.log(`Waiting for messages at ${this.mqUrl} in ${this.queue}`);
 
                 channel.consume(this.queue, async (msg) => {
-                    console.log(`Received ${msg.content.toString()}"`);
-                    if(corrId || corrId === msg.properties.correlationId) {
+                    if(corrId && corrId !== msg.properties.correlationId) {
+                        console.log(corrId+ ' ' +msg.properties.correlationId);
                         channel.publish(this.exchange, '*.response', msg.content, {
                             "correlationId":msg.properties.correlationId
                         });
                     } else {
+                        console.log(`Received ${msg.content.toString()}"`);
                         await this.reply(msg, channel)
                         channel.ack(msg);
                     }
