@@ -22,7 +22,7 @@
 - [x] SSL (HTTPS) for all web pages  (DO NOT NEED 3rd party signed cert, self signed is ok)
 
 
- ## Server Setup
+ ## Server Documentation
 
  ### Database 
  #### 1. `cd IT-490-Artlock/database`
