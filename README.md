@@ -19,7 +19,7 @@
 - [x] Firewalls protecting our backend
 - [x] Hashed Password in the Database
 - [x] Responsive Websites for the front end
-- [ ] SSL (HTTPS) for all web pages  (DO NOT NEED 3rd party signed cert, self signed is ok)
+- [x] SSL (HTTPS) for all web pages  (DO NOT NEED 3rd party signed cert, self signed is ok)
 
 
  ## Server Setup
