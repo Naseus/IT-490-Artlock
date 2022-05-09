@@ -24,8 +24,8 @@ class Client {
         let conn = await amqp.connect(this.mqUrl)
         let channel = await conn.createChannel();
         channel.publish(
-            this.exchange,
-            '*',
+            '',
+            this.queue,
             Buffer.from(JSON.stringify(msg)),
             {"correlationId":corrId});
 
@@ -50,7 +50,7 @@ class Client {
                 break;
             }
             console.log('made it');
-            channel.publish(this.exchange, '*.response', res.content, {
+            channel.publish('', rqueue, res.content, {
                 "correlationId":res.properties.correlationId
             });
         }

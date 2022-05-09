@@ -41,17 +41,27 @@ async function main() {
         }
         let msg = formatData(data);
         await deploy.setOnTest(data);
-        console.log(msg);
 
-        console.log(rmqClient.queue);
         rmqClient.queue = 'test_' + msg.pkg_type;
-        console.log(rmqClient.queue);
         await rmqClient.sendData(msg);
         process.exit();
     }
     if(command === 'deploy') {
-        // let data = deploy.getTested()
-        // for(let row of data)
+        if(argv.length < 4){
+            throw "No package name provided"
+        }
+        let data = await deploy.getPkg(argv[3]);
+        if(deploy.length < 1) {
+            throw "no package was found";
+        }
+        let msg = formatData(data);
+
+        rmqClient.queue = 'deploy_' + msg.pkg_type;
+        await rmqClient.sendData(msg);
+
+        rmqClient.queue = 'deploy_' + msg.pkg_type + '1';
+        await rmqClient.sendData(msg);
+        process.exit();
     }
 }
 

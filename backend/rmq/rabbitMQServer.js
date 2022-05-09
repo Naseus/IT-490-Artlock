@@ -15,10 +15,10 @@ class Server {
 
     async reply(msg, channel) {
         // Formating the routing key to match the php client
-        let replyTo = msg.fields.routingKey + '.response';
+        let replyTo = this.queue + '_response';
 
         if(replyTo) {
-            channel.publish(this.exchange, replyTo, await this.handler.handle(msg), {
+            channel.publish('', replyTo, await this.handler.handle(msg), {
                 "correlationId":msg.properties.correlationId
             });
         }

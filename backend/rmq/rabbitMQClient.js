@@ -24,8 +24,8 @@ class Client {
         let conn = await amqp.connect(this.mqUrl)
         let channel = await conn.createChannel();
         channel.publish(
-            this.exchange,
-            '*',
+            '',
+            this.queue,
             Buffer.from(JSON.stringify(msg)),
             {"correlationId":corrId});
 
@@ -33,7 +33,6 @@ class Client {
         let rqueue = this.queue + '_response';
         await channel.assertQueue(rqueue, {'durable':false, 'autoDelete':true});
         await channel.bindQueue(rqueue, this.exchange, '*.response');
-        console.log('made');
 
         let res = false;
         let i = 0;
@@ -50,11 +49,13 @@ class Client {
             if (res.properties.correlationId === corrId) {
                 break;
             }
-            console.log('made it');
-            channel.publish(this.exchange, '*.response', res.content, {
+            channel.publish('', rqueue, res.content, {
                 "correlationId":res.properties.correlationId
             });
         }
+        // TODO: Look into a more scalabe way to handle the extra requests. This
+        //       might not work with multible clients.
+        //channel.ackAll();
 
         if(!res)
             return false;
