@@ -49,8 +49,7 @@ class Client {
             if (res.properties.correlationId === corrId) {
                 break;
             }
-            console.log('made it');
-            channel.publish('', rqueue, res.content, {
+            channel.publish(this.exchange, '*.response', res.content, {
                 "correlationId":res.properties.correlationId
             });
         }

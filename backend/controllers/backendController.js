@@ -12,7 +12,7 @@ const commentClient = new CommentClient();
 const stackClient = new StackClient();
 
 
-const RmqClient = require('../rabbitMQClient.js');
+const RmqClient = require('../rmq/rabbitMQClient.js');
 
 const rmqClient = new RmqClient(require('../dmzrabbitMQ.js'));
 
@@ -103,6 +103,7 @@ class BackendController {
 
         let data = await rmqClient.sendData(dmzReq);
         if(!data) {
+	    console.log(data);
             res.status = 500;
             res.body = 'API fail';
             return res;

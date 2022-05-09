@@ -8,17 +8,17 @@ class Server {
                 + `:${mqData["BROKER_PORT"]}`
                 + `/${mqData["VHOST"]}`);
 
-        this.queue = mqData['QUEUE']
-        this.exchange = mqData['EXCHANGE']
+        this.queue = mqData['QUEUE'];
+        this.exchange = mqData['EXCHANGE'];
         this.handler = handler
     }
 
     async reply(msg, channel) {
         // Formating the routing key to match the php client
-        let replyTo = msg.fields.routingKey + '.response';
+        let replyTo = this.queue + '_response';
 
         if(replyTo) {
-            channel.publish(this.exchange, replyTo, await this.handler.handle(msg), {
+            channel.publish('', replyTo, await this.handler.handle(msg), {
                 "correlationId":msg.properties.correlationId
             });
         }

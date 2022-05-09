@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+//TODO: delete this endpoint or convert it to node
 require_once('../path.inc');
 require_once('../get_host_info.inc');
 require_once('../rabbitMQLib.inc');
