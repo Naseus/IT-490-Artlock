@@ -88,7 +88,7 @@ note: we ran into a common configuration issue with this db_conn.js, `ER_NOT_SUP
 - `sudo rabbitmqctl set_user_tags test administrator`
 - `sudo rabbitmqctl set_permissions -p / test ".*" ".*" ".*"`
 
-Login to the management panel and create a virtual host testHost. The server asserts the relevant queues so they do not have to be explicitly created.
+Login to the management panel and create a virtual host testHost, dmzExchange(direct), and testExchange(direct). The server asserts the relevant queues so they do not have to be explicitly created.
 
   #### 4. run `node app.js` in IT-490-Artlock/backend/
 
